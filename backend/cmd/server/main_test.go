@@ -8,7 +8,7 @@ import (
 )
 
 func TestHealthEndpoint(t *testing.T) {
-	router := newRouter()
+	router, _ := testRouter(t)
 
 	t.Run("returns 200 OK", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/api/health", nil)
