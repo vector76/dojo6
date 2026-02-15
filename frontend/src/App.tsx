@@ -6,6 +6,8 @@ import { Layout } from './components/Layout'
 import { LoginPage } from './pages/LoginPage'
 import { SetupPage } from './pages/SetupPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { PaymentsPage } from './pages/PaymentsPage'
+import { MyPaymentsPage } from './pages/MyPaymentsPage'
 
 function AppRoutes() {
   const navigate = useNavigate()
@@ -26,6 +28,8 @@ function AppRoutes() {
           }
         >
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/my-payments" element={<MyPaymentsPage />} />
         </Route>
       </Routes>
     </AuthProvider>
