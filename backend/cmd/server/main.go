@@ -15,7 +15,13 @@ func newRouter() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Get("/api/health", healthHandler)
+	// API routes are grouped so unknown paths under /api still return 404.
+	r.Route("/api", func(api chi.Router) {
+		api.Get("/health", healthHandler)
+	})
+
+	// Serve embedded frontend for all non-API routes.
+	r.NotFound(spaHandler().ServeHTTP)
 
 	return r
 }
