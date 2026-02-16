@@ -9,15 +9,16 @@ import (
 	"os"
 	"time"
 
-	"dojo6/backend/internal/auth"
-	"dojo6/backend/internal/database"
-	"dojo6/backend/internal/models"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"dojo6/backend/internal/auth"
+	"dojo6/backend/internal/database"
+	"dojo6/backend/internal/handlers"
+	"dojo6/backend/internal/models"
 )
 
-func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanceHandler *AttendanceHandlers, jwtSvc *auth.JWTService) chi.Router {
+func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanceHandler *AttendanceHandlers, userHandler *handlers.UserHandler, jwtSvc *auth.JWTService) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -63,6 +64,15 @@ func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanc
 			})
 			// User attendance: permission check is done in the handler (self or admin/instructor).
 			protected.Get("/users/{id}/attendance", attendanceHandler.ListUserAttendance)
+
+			// Users: CRUD with role-based access.
+			protected.Get("/users", userHandler.List)
+			protected.Post("/users", userHandler.Create)
+			protected.Get("/users/{id}", userHandler.GetByID)
+			protected.Put("/users/{id}", userHandler.Update)
+			protected.Delete("/users/{id}", userHandler.Delete)
+			protected.Put("/users/{id}/role", userHandler.ChangeRole)
+			protected.Put("/users/{id}/password", userHandler.ChangePassword)
 		})
 	})
 
@@ -119,8 +129,9 @@ func main() {
 
 	classHandler := &ClassHandlers{DB: db}
 	attendanceHandler := &AttendanceHandlers{Attendance: models.NewAttendanceRepository(db)}
+	userHandler := handlers.NewUserHandler(models.NewUserRepository(db))
 
-	r := newRouter(authHandler, classHandler, attendanceHandler, jwtSvc)
+	r := newRouter(authHandler, classHandler, attendanceHandler, userHandler, jwtSvc)
 
 	log.Printf("Server starting on :%s", port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {

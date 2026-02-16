@@ -25,12 +25,12 @@ func JWTMiddleware(svc *JWTService) func(http.Handler) http.Handler {
 			header := r.Header.Get("Authorization")
 			tokenStr, found := strings.CutPrefix(header, "Bearer ")
 			if !found {
-				writeJSONError(w, "unauthorized", http.StatusUnauthorized)
+				WriteJSONError(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
 			claims, err := svc.ValidateToken(tokenStr)
 			if err != nil {
-				writeJSONError(w, "unauthorized", http.StatusUnauthorized)
+				WriteJSONError(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
 			ctx := context.WithValue(r.Context(), claimsKey, claims)
@@ -70,7 +70,7 @@ func RequireRole(roles ...string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims := GetClaims(r)
 			if claims == nil || !allowed[claims.Role] {
-				writeJSONError(w, "forbidden", http.StatusForbidden)
+				WriteJSONError(w, "forbidden", http.StatusForbidden)
 				return
 			}
 			next.ServeHTTP(w, r)
@@ -78,7 +78,8 @@ func RequireRole(roles ...string) func(http.Handler) http.Handler {
 	}
 }
 
-func writeJSONError(w http.ResponseWriter, msg string, status int) {
+// WriteJSONError writes a JSON error response with the given message and HTTP status code.
+func WriteJSONError(w http.ResponseWriter, msg string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write([]byte(`{"error":"` + msg + `"}`))

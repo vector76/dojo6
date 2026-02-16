@@ -7,6 +7,7 @@ import (
 
 	"dojo6/backend/internal/auth"
 	"dojo6/backend/internal/database"
+	"dojo6/backend/internal/handlers"
 	"dojo6/backend/internal/models"
 
 	"github.com/go-chi/chi/v5"
@@ -46,8 +47,9 @@ func testEnv2(t *testing.T) testEnv {
 	}
 	ch := &ClassHandlers{DB: db}
 	ah := &AttendanceHandlers{Attendance: models.NewAttendanceRepository(db)}
+	uh := handlers.NewUserHandler(models.NewUserRepository(db))
 	return testEnv{
-		Router: newRouter(h, ch, ah, testJWTSvc),
+		Router: newRouter(h, ch, ah, uh, testJWTSvc),
 		Auth:   h,
 		DB:     db,
 	}
