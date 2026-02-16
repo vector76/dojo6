@@ -13,6 +13,8 @@ import ClassTypes from './pages/ClassTypes'
 import { MemberListPage } from './pages/MemberListPage'
 import { MemberDetailPage } from './pages/MemberDetailPage'
 import { AddMemberPage } from './pages/AddMemberPage'
+import { AttendancePage } from './pages/AttendancePage'
+import { MyAttendancePage } from './pages/MyAttendancePage'
 
 function AppRoutes() {
   const navigate = useNavigate()
@@ -40,6 +42,8 @@ function AppRoutes() {
           <Route path="/members" element={<MemberListPage />} />
           <Route path="/members/new" element={<AddMemberPage />} />
           <Route path="/members/:id" element={<MemberDetailPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/my-attendance" element={<MyAttendancePage />} />
         </Route>
       </Routes>
     </AuthProvider>
