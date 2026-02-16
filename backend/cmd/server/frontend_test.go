@@ -8,7 +8,7 @@ import (
 )
 
 func TestSPAServing(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	t.Run("serves index.html at root", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)

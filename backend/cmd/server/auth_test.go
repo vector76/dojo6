@@ -12,7 +12,7 @@ import (
 )
 
 func TestSetupStatus_NoUsers(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/auth/setup-status", nil)
 	rec := httptest.NewRecorder()
@@ -30,7 +30,7 @@ func TestSetupStatus_NoUsers(t *testing.T) {
 }
 
 func TestSetup_CreatesAdmin(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	body := `{"email":"admin@dojo.com","password":"secret123","name":"Admin","phone":"555-0100"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/auth/setup", strings.NewReader(body))
@@ -68,7 +68,7 @@ func TestSetup_CreatesAdmin(t *testing.T) {
 }
 
 func TestSetup_FailsWhenUsersExist(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	// Create a user first.
 	hash, _ := auth.HashPassword("pw")
@@ -87,7 +87,7 @@ func TestSetup_FailsWhenUsersExist(t *testing.T) {
 }
 
 func TestSetupStatus_AfterSetup(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("pw")
 	user := models.User{Name: "A", Email: "a@b.com", Role: "admin", PasswordHash: hash}
@@ -105,7 +105,7 @@ func TestSetupStatus_AfterSetup(t *testing.T) {
 }
 
 func TestLogin_Success(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("mypassword")
 	user := models.User{Name: "Alice", Email: "alice@dojo.com", Phone: "555-0101", Role: "user", PasswordHash: hash}
@@ -138,7 +138,7 @@ func TestLogin_Success(t *testing.T) {
 }
 
 func TestLogin_WrongPassword(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("correct")
 	user := models.User{Name: "A", Email: "a@b.com", Role: "user", PasswordHash: hash}
@@ -156,7 +156,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 }
 
 func TestLogin_NonexistentEmail(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	body := `{"email":"nobody@dojo.com","password":"pass"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/auth/login", strings.NewReader(body))
@@ -170,7 +170,7 @@ func TestLogin_NonexistentEmail(t *testing.T) {
 }
 
 func TestLogin_SoftDeletedUser(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("pass")
 	user := models.User{Name: "Del", Email: "del@b.com", Role: "user", PasswordHash: hash}
@@ -189,7 +189,7 @@ func TestLogin_SoftDeletedUser(t *testing.T) {
 }
 
 func TestLogin_MissingFields(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	body := `{"email":"a@b.com"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/auth/login", strings.NewReader(body))
@@ -203,7 +203,7 @@ func TestLogin_MissingFields(t *testing.T) {
 }
 
 func TestMe_WithValidToken(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("pass")
 	user := models.User{Name: "Alice", Email: "alice@dojo.com", Phone: "555-0101", Role: "instructor", PasswordHash: hash}
@@ -235,7 +235,7 @@ func TestMe_WithValidToken(t *testing.T) {
 }
 
 func TestMe_WithoutToken(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
 	rec := httptest.NewRecorder()
@@ -247,7 +247,7 @@ func TestMe_WithoutToken(t *testing.T) {
 }
 
 func TestMe_WithInvalidToken(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
 	req.Header.Set("Authorization", "Bearer invalid-token")
@@ -260,7 +260,7 @@ func TestMe_WithInvalidToken(t *testing.T) {
 }
 
 func TestMe_SoftDeletedUser(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	hash, _ := auth.HashPassword("pass")
 	user := models.User{Name: "Del", Email: "del@b.com", Role: "user", PasswordHash: hash}
@@ -281,7 +281,7 @@ func TestMe_SoftDeletedUser(t *testing.T) {
 }
 
 func TestAuthRoundTrip(t *testing.T) {
-	router, _ := testRouter(t)
+	router, _, _ := testRouter(t)
 
 	// 1. Setup creates admin.
 	setupBody := `{"email":"admin@dojo.com","password":"admin123","name":"Admin","phone":"555-0100"}`
@@ -347,7 +347,7 @@ func TestAuthRoundTrip(t *testing.T) {
 }
 
 func TestRoleEnforcement(t *testing.T) {
-	router, h := testRouter(t)
+	router, h, _ := testRouter(t)
 
 	// Create users with different roles.
 	roles := map[string]*models.User{

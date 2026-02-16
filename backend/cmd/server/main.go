@@ -18,7 +18,7 @@ import (
 	"dojo6/backend/internal/models"
 )
 
-func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanceHandler *AttendanceHandlers, userHandler *handlers.UserHandler, jwtSvc *auth.JWTService) chi.Router {
+func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanceHandler *AttendanceHandlers, userHandler *handlers.UserHandler, paymentHandler *PaymentHandler, jwtSvc *auth.JWTService) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -73,6 +73,12 @@ func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanc
 			protected.Delete("/users/{id}", userHandler.Delete)
 			protected.Put("/users/{id}/role", userHandler.ChangeRole)
 			protected.Put("/users/{id}/password", userHandler.ChangePassword)
+
+			// Payment endpoints.
+			protected.With(auth.RequireRole("admin")).Post("/payments", paymentHandler.RecordPayment)
+			protected.Get("/users/{id}/payments", paymentHandler.ListUserPayments)
+			protected.Get("/users/{id}/balance", paymentHandler.GetBalance)
+			protected.With(auth.RequireRole("admin")).Put("/users/{id}/balance", paymentHandler.SetBalance)
 		})
 	})
 
@@ -82,10 +88,18 @@ func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanc
 	return r
 }
 
-func healthHandler(w http.ResponseWriter, _ *http.Request) {
+func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(v)
+}
+
+func writeError(w http.ResponseWriter, status int, msg string) {
+	writeJSON(w, status, map[string]string{"error": msg})
+}
+
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
 func main() {
@@ -122,16 +136,22 @@ func main() {
 
 	jwtSvc := auth.NewJWTService(jwtSecret, 24*time.Hour)
 
+	userRepo := models.NewUserRepository(db)
+
 	authHandler := &auth.Handler{
-		Users:  models.NewUserRepository(db),
+		Users:  userRepo,
 		JWTSvc: jwtSvc,
 	}
 
 	classHandler := &ClassHandlers{DB: db}
 	attendanceHandler := &AttendanceHandlers{Attendance: models.NewAttendanceRepository(db)}
 	userHandler := handlers.NewUserHandler(models.NewUserRepository(db))
+	paymentHandler := &PaymentHandler{
+		Payments: models.NewPaymentRepository(db),
+		Users:    userRepo,
+	}
 
-	r := newRouter(authHandler, classHandler, attendanceHandler, userHandler, jwtSvc)
+	r := newRouter(authHandler, classHandler, attendanceHandler, userHandler, paymentHandler, jwtSvc)
 
 	log.Printf("Server starting on :%s", port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
