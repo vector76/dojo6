@@ -91,11 +91,8 @@ describe('ClassTypes', () => {
     })
 
     // Verify the POST call
-    const postCall = mockFetch.mock.calls.find(
-      (call: [string, RequestInit]) => {
-        const opts = call[1] as RequestInit | undefined
-        return opts?.method === 'POST'
-      },
+    const postCall = (mockFetch.mock.calls as [string, RequestInit][]).find(
+      (call) => call[1]?.method === 'POST',
     )
     expect(postCall).toBeDefined()
     const body = JSON.parse(postCall![1].body as string)

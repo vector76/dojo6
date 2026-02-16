@@ -146,22 +146,24 @@ export function AttendancePage() {
           ) : attendance.length === 0 ? (
             <p>No attendance recorded for this class.</p>
           ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Member ID</th>
-                  <th>Checked In</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attendance.map((a) => (
-                  <tr key={a.id}>
-                    <td>{a.user_id}</td>
-                    <td>{formatDateTime(a.checked_in_at)}</td>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member ID</th>
+                    <th>Checked In</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {attendance.map((a) => (
+                    <tr key={a.id}>
+                      <td>{a.user_id}</td>
+                      <td>{formatDateTime(a.checked_in_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       )}

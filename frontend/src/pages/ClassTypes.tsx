@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
-  ClassType,
   createClassType,
   deleteClassType,
   listClassTypes,
   updateClassType,
 } from '../api/classes'
+import type { ClassType } from '../api/classes'
 
 export default function ClassTypes() {
   const [classTypes, setClassTypes] = useState<ClassType[]>([])
@@ -83,7 +83,7 @@ export default function ClassTypes() {
     <div>
       <h2>Class Types</h2>
 
-      {error && <p role="alert" style={{ color: 'red' }}>{error}</p>}
+      {error && <div role="alert">{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -116,27 +116,29 @@ export default function ClassTypes() {
       {classTypes.length === 0 ? (
         <p>No class types yet.</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {classTypes.map((ct) => (
-              <tr key={ct.id}>
-                <td>{ct.name}</td>
-                <td>{ct.description}</td>
-                <td>
-                  <button onClick={() => startEdit(ct)}>Edit</button>
-                  <button onClick={() => handleDelete(ct.id)}>Delete</button>
-                </td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {classTypes.map((ct) => (
+                <tr key={ct.id}>
+                  <td>{ct.name}</td>
+                  <td>{ct.description}</td>
+                  <td>
+                    <button onClick={() => startEdit(ct)}>Edit</button>
+                    <button onClick={() => handleDelete(ct.id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

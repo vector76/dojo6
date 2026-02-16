@@ -220,11 +220,8 @@ describe('AttendancePage', () => {
     })
 
     // Verify the POST call was made
-    const postCall = mockFetch.mock.calls.find(
-      (call: [string, RequestInit]) => {
-        const o = call[1] as RequestInit | undefined
-        return o?.method === 'POST'
-      },
+    const postCall = (mockFetch.mock.calls as [string, RequestInit][]).find(
+      (call) => call[1]?.method === 'POST',
     )
     expect(postCall).toBeDefined()
     expect(postCall![0]).toContain('/classes/10/attendance')

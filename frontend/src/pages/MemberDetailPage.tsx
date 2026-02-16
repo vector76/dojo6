@@ -251,7 +251,7 @@ export function MemberDetailPage() {
           </form>
 
           <hr />
-          <button onClick={handleDelete} style={{ color: 'red' }}>
+          <button onClick={handleDelete} className="danger-btn">
             Delete Member
           </button>
         </>

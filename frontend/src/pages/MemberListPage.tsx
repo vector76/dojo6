@@ -73,33 +73,35 @@ export function MemberListPage() {
         </select>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((m) => (
-            <tr key={m.id}>
-              <td>
-                <Link to={`/members/${m.id}`}>{m.name}</Link>
-              </td>
-              <td>{m.email}</td>
-              <td>{m.role}</td>
-              <td>{m.membership_status || '—'}</td>
-            </tr>
-          ))}
-          {filtered.length === 0 && (
+      <div className="table-wrap">
+        <table>
+          <thead>
             <tr>
-              <td colSpan={4}>No members found</td>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map((m) => (
+              <tr key={m.id}>
+                <td>
+                  <Link to={`/members/${m.id}`}>{m.name}</Link>
+                </td>
+                <td>{m.email}</td>
+                <td>{m.role}</td>
+                <td>{m.membership_status || '—'}</td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4}>No members found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

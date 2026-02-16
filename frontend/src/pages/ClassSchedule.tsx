@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Class, ClassType, listClasses, listClassTypes } from '../api/classes'
+import { listClasses, listClassTypes } from '../api/classes'
+import type { Class, ClassType } from '../api/classes'
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
@@ -61,33 +62,35 @@ export default function ClassSchedule() {
     <div>
       <h2>Class Schedule</h2>
 
-      {error && <p role="alert" style={{ color: 'red' }}>{error}</p>}
+      {error && <div role="alert">{error}</div>}
 
       {classes.length === 0 ? (
         <p>No classes scheduled.</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Type</th>
-              <th>Duration</th>
-              <th>Capacity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {classes.map((cls) => (
-              <tr key={cls.id}>
-                <td>{formatDate(cls.start_time)}</td>
-                <td>{formatTime(cls.start_time)}</td>
-                <td>{classTypes.get(cls.class_type_id)?.name ?? 'Unknown'}</td>
-                <td>{cls.duration_minutes} min</td>
-                <td>{cls.capacity}</td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Capacity</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {classes.map((cls) => (
+                <tr key={cls.id}>
+                  <td>{formatDate(cls.start_time)}</td>
+                  <td>{formatTime(cls.start_time)}</td>
+                  <td>{classTypes.get(cls.class_type_id)?.name ?? 'Unknown'}</td>
+                  <td>{cls.duration_minutes} min</td>
+                  <td>{cls.capacity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
