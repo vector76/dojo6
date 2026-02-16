@@ -8,6 +8,8 @@ import { SetupPage } from './pages/SetupPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { PaymentsPage } from './pages/PaymentsPage'
 import { MyPaymentsPage } from './pages/MyPaymentsPage'
+import ClassSchedule from './pages/ClassSchedule'
+import ClassTypes from './pages/ClassTypes'
 
 function AppRoutes() {
   const navigate = useNavigate()
@@ -30,6 +32,8 @@ function AppRoutes() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/my-payments" element={<MyPaymentsPage />} />
+          <Route path="/classes" element={<ClassSchedule />} />
+          <Route path="/class-types" element={<ClassTypes />} />
         </Route>
       </Routes>
     </AuthProvider>
