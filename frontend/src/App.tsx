@@ -10,6 +10,9 @@ import { PaymentsPage } from './pages/PaymentsPage'
 import { MyPaymentsPage } from './pages/MyPaymentsPage'
 import ClassSchedule from './pages/ClassSchedule'
 import ClassTypes from './pages/ClassTypes'
+import { MemberListPage } from './pages/MemberListPage'
+import { MemberDetailPage } from './pages/MemberDetailPage'
+import { AddMemberPage } from './pages/AddMemberPage'
 
 function AppRoutes() {
   const navigate = useNavigate()
@@ -34,6 +37,9 @@ function AppRoutes() {
           <Route path="/my-payments" element={<MyPaymentsPage />} />
           <Route path="/classes" element={<ClassSchedule />} />
           <Route path="/class-types" element={<ClassTypes />} />
+          <Route path="/members" element={<MemberListPage />} />
+          <Route path="/members/new" element={<AddMemberPage />} />
+          <Route path="/members/:id" element={<MemberDetailPage />} />
         </Route>
       </Routes>
     </AuthProvider>
