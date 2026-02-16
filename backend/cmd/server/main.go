@@ -17,7 +17,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, jwtSvc *auth.JWTService) chi.Router {
+func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, attendanceHandler *AttendanceHandlers, jwtSvc *auth.JWTService) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -54,6 +54,15 @@ func newRouter(authHandler *auth.Handler, classHandler *ClassHandlers, jwtSvc *a
 				admin.Put("/classes/{id}", classHandler.UpdateClass)
 				admin.Delete("/classes/{id}", classHandler.DeleteClass)
 			})
+
+			// Attendance: class attendance for admin/instructor, user history for self/admin/instructor.
+			protected.Group(func(staff chi.Router) {
+				staff.Use(auth.RequireRole("admin", "instructor"))
+				staff.Post("/classes/{id}/attendance", attendanceHandler.RecordAttendance)
+				staff.Get("/classes/{id}/attendance", attendanceHandler.ListClassAttendance)
+			})
+			// User attendance: permission check is done in the handler (self or admin/instructor).
+			protected.Get("/users/{id}/attendance", attendanceHandler.ListUserAttendance)
 		})
 	})
 
@@ -109,8 +118,9 @@ func main() {
 	}
 
 	classHandler := &ClassHandlers{DB: db}
+	attendanceHandler := &AttendanceHandlers{Attendance: models.NewAttendanceRepository(db)}
 
-	r := newRouter(authHandler, classHandler, jwtSvc)
+	r := newRouter(authHandler, classHandler, attendanceHandler, jwtSvc)
 
 	log.Printf("Server starting on :%s", port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {

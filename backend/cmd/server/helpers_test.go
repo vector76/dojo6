@@ -45,8 +45,9 @@ func testEnv2(t *testing.T) testEnv {
 		JWTSvc: testJWTSvc,
 	}
 	ch := &ClassHandlers{DB: db}
+	ah := &AttendanceHandlers{Attendance: models.NewAttendanceRepository(db)}
 	return testEnv{
-		Router: newRouter(h, ch, testJWTSvc),
+		Router: newRouter(h, ch, ah, testJWTSvc),
 		Auth:   h,
 		DB:     db,
 	}
